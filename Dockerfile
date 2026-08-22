@@ -4,11 +4,15 @@
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy the pom first and download dependencies into a cached layer, so a
-# code-only change doesn't re-download the whole dependency tree.
+# Copy the pom first so Docker can cache the dependency-download layer
+# separately from source changes -- but resolve dependencies via the real
+# `package` step below, not a separate `dependency:go-offline` /
+# `dependency:resolve` pre-warm. Those goals have a known bug where they
+# ignore <exclusions> while walking the graph (they try to fetch every
+# transitive descriptor, even ones we've explicitly excluded -- see
+# pom.xml's ehcache exclusion), which fails on broken upstream metadata
+# that a normal `package` build resolves around just fine.
 COPY pom.xml .
-RUN mvn -B -q dependency:go-offline
-
 COPY src ./src
 RUN mvn -B -q clean package -DskipTests
 
