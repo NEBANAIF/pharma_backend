@@ -82,6 +82,10 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login").permitAll()
+                // Reachable unauthenticated only so the bootstrap case below
+                // has a URL to hit at all -- @PreAuthorize on the method
+                // itself still enforces "ADMIN, OR no users exist yet".
+                .requestMatchers("/api/auth/register").permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

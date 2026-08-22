@@ -22,9 +22,10 @@ public class AuthController {
         return authService.login(request);
     }
 
-    // Now locked to ADMIN only. During initial bootstrap (no users exist yet),
-    // this endpoint was left open long enough to create the first admin account.
-    @PreAuthorize("hasRole('ADMIN')")
+    // Reachable while unauthenticated ONLY if no users exist yet (bootstrap
+    // case) -- see BootstrapGuard. Once the first account is created, this
+    // permanently requires an authenticated ADMIN, same as before.
+    @PreAuthorize("hasRole('ADMIN') or @bootstrapGuard.noUsersExist()")
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@Valid @RequestBody RegisterRequest request) {
