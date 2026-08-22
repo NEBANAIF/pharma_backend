@@ -21,6 +21,25 @@
         <java.version>17</java.version>
     </properties>
 
+    <!--
+      ehcache:jakarta:3.10.8 (pulled in transitively by hibernate-jcache) has a
+      published POM that requests javax.xml.bind:jaxb-api:2.3.0-b161121.1438,
+      an old pre-release build that only ever existed on the now-dead java.net
+      repositories. Maven Central never hosted it, so any build with Central-only
+      mirrors (e.g. the maven:3.9-eclipse-temurin-17 Docker image) fails to
+      resolve it. This isn't our dependency directly; pin it to a real released
+      version that IS on Central so the transitive request is satisfied instead.
+    -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.3.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
