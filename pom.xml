@@ -72,6 +72,27 @@
             <groupId>org.ehcache</groupId>
             <artifactId>ehcache</artifactId>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <!--
+                  This specific transitive edge (jaxb-runtime -> jaxb-core -> jaxb-api
+                  build b161121.1438) points at a POM that was only ever published to
+                  the now-dead java.net repositories and isn't on Maven Central. A
+                  dependencyManagement version override isn't enough here because
+                  Maven's collector still tries to fetch THIS exact POM while walking
+                  the graph, before any override can apply. Excluding it outright
+                  stops that fetch attempt; the explicit jaxb-api dependency below
+                  supplies the same classes from a version that's actually resolvable.
+                -->
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
