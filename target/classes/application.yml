@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pms_db
+    username: postgres
+    password: Nebil@2026
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      # Hibernate auto-creates/alters tables from your @Entity classes on startup.
+      # Fine for solo/prototyping; switch back to 'validate' once you're running real migrations.
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # --- Second-level cache (entity/query cache shared across sessions) ---
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+          region:
+            factory_class: jcache
+        javax:
+          cache:
+            provider: org.ehcache.jsr107.EhcacheCachingProvider
+            # points Hibernate's JCache region factory at the Ehcache config below
+            uri: classpath:ehcache.xml
+
+pms:
+  jwt:
+    secret: change-this-to-a-long-random-secret-before-production
+    expiration-ms: 86400000   # 24 hours

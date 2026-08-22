@@ -1,0 +1,46 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/pms_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:Nebil@2026}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      # Hibernate auto-creates/alters tables from your @Entity classes on startup.
+      # Fine for solo/prototyping -- including against a brand-new Neon database,
+      # where this is exactly what creates every table on first boot. Switch to
+      # 'validate' later once the schema has stabilized and you want Hibernate
+      # to stop touching it.
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: ${SPRING_JPA_SHOW_SQL:true}
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # --- Second-level cache (entity/query cache shared across sessions) ---
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+          region:
+            factory_class: jcache
+        javax:
+          cache:
+            provider: org.ehcache.jsr107.EhcacheCachingProvider
+            # points Hibernate's JCache region factory at the Ehcache config below
+            uri: classpath:ehcache.xml
+
+pms:
+  jwt:
+    secret: ${PMS_JWT_SECRET:change-this-to-a-long-random-secret-before-production}
+    expiration-ms: ${PMS_JWT_EXPIRATION_MS:86400000}   # 24 hours
+  cors:
+    # Comma-separated list of allowed origins, e.g.
+    # https://your-app.netlify.app,https://your-custom-domain.com
+    allowed-origins: ${PMS_CORS_ALLOWED_ORIGINS:http://localhost:5173}

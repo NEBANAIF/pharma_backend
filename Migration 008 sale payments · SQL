@@ -1,0 +1,22 @@
+-- Migration: track actual amount paid / amount still due per sale
+-- Needed so POS can support PARTIAL and CREDIT sales for real, instead of
+-- just storing a payment_status label with no amount behind it.
+--
+-- Also adds points_earned / points_redeemed so loyalty activity is visible
+-- on the sale itself (receipts, sales history), not just as a silent
+-- mutation of customers.loyalty_points.
+--
+-- Run against your EXISTING pms_db database -- additive only.
+-- Via pgAdmin: open Query Tool on pms_db, paste this, run.
+-- Via psql:    psql -U postgres -d pms_db -f migration_008_sale_payments.sql
+
+ALTER TABLE sales
+    ADD COLUMN amount_paid     NUMERIC(12,2) DEFAULT 0,
+    ADD COLUMN amount_due      NUMERIC(12,2) DEFAULT 0,
+    ADD COLUMN points_earned   INTEGER DEFAULT 0,
+    ADD COLUMN points_redeemed INTEGER DEFAULT 0;
+
+-- Backfill existing rows: everything before this migration was recorded as
+-- fully paid, so amount_paid = total_amount and amount_due = 0. No loyalty
+-- activity was ever tracked before, so points stay at 0 for old rows.
+UPDATE sales SET amount_paid = total_amount, amount_due = 0;

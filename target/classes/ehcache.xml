@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Hibernate second-level cache regions, read via the JCache (JSR-107) bridge.
+
+  How it works:
+    - Each entity annotated with @Cache gets its own region here, named after
+      its fully-qualified class name.
+    - "heap" = max number of entries kept in memory per region.
+    - "time-to-live-seconds" = how long an entry is trusted before Hibernate
+      re-reads it from the DB, even if nothing evicted it.
+    - Hibernate still invalidates a region entry immediately on save/update/
+      delete through JPA, though only for changes made through Hibernate
+      itself; a manual SQL UPDATE bypassing JPA wouldn't be caught by that,
+      which is what the TTL is a backstop for.
+
+  Only reference/lookup-style entities are cached: things that are read far
+  more often than they're written (categories, roles, branches, settings,
+  suppliers, insurance providers, medicines, insurance-approved medicines).
+  Transactional data (sales, purchases, stock batches, etc.) is deliberately
+  left out, since caching those risks serving stale stock/financial numbers,
+  which matters more here than the read speedup.
+-->
+<config xmlns="http://www.ehcache.org/v3"
+        xmlns:jsr107="http://www.ehcache.org/v3/jsr107">
+
+    <service>
+        <jsr107:defaults enable-management="false" enable-statistics="false"/>
+    </service>
+
+    <cache alias="com.pms.pmsbackend.entity.Category">
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">200</heap>
+        </resources>
+    </cache>
+
+    <cache alias="com.pms.pmsbackend.entity.Role">
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">50</heap>
+        </resources>
+    </cache>
+
+    <cache alias="com.pms.pmsbackend.entity.Branch">
+        <expiry>
+            <ttl unit="seconds">1800</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+
+    <cache alias="com.pms.pmsbackend.entity.Settings">
+        <expiry>
+            <ttl unit="seconds">1800</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">5</heap>
+        </resources>
+    </cache>
+
+    <cache alias="com.pms.pmsbackend.entity.Supplier">
+        <expiry>
+            <ttl unit="seconds">1800</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">500</heap>
+        </resources>
+    </cache>
+
+    <cache alias="com.pms.pmsbackend.entity.InsuranceProvider">
+        <expiry>
+            <ttl unit="seconds">1800</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">200</heap>
+        </resources>
+    </cache>
+
+    <cache alias="com.pms.pmsbackend.entity.InsuranceApprovedMedicine">
+        <expiry>
+            <ttl unit="seconds">900</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">5000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="com.pms.pmsbackend.entity.Medicine">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">5000</heap>
+        </resources>
+    </cache>
+
+    <!-- Hibernate's built-in query cache bookkeeping regions -->
+    <cache alias="default-update-timestamps-region">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">5000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="default-query-results-region">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+    </cache>
+
+</config>
