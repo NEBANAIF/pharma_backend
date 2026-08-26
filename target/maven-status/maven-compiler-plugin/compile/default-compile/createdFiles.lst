@@ -19,6 +19,7 @@ com\pms\pmsbackend\dto\StockTransferResponse.class
 com\pms\pmsbackend\entity\StockTransfer.class
 com\pms\pmsbackend\entity\Category.class
 com\pms\pmsbackend\entity\Purchase.class
+com\pms\pmsbackend\config\BootstrapGuard.class
 com\pms\pmsbackend\dto\ResolveClaimRequest.class
 com\pms\pmsbackend\controller\DashboardController.class
 com\pms\pmsbackend\entity\SaleItem.class
@@ -64,6 +65,7 @@ com\pms\pmsbackend\config\SecurityConfig.class
 com\pms\pmsbackend\repository\PrescriptionRepository.class
 com\pms\pmsbackend\repository\StockTransferRepository.class
 com\pms\pmsbackend\dto\UserResponse.class
+com\pms\pmsbackend\config\DataSeeder.class
 com\pms\pmsbackend\entity\User.class
 com\pms\pmsbackend\service\AuthService.class
 com\pms\pmsbackend\service\MedicineService.class

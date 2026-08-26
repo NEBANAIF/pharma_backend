@@ -36,15 +36,6 @@
         </resources>
     </cache>
 
-    <cache alias="com.pms.pmsbackend.entity.Role">
-        <expiry>
-            <ttl unit="seconds">3600</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">50</heap>
-        </resources>
-    </cache>
-
     <cache alias="com.pms.pmsbackend.entity.Branch">
         <expiry>
             <ttl unit="seconds">1800</ttl>
