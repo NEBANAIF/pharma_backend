@@ -32,7 +32,7 @@ public class BackupService {
     private final String password;
 
     private static final Pattern JDBC_URL_PATTERN =
-            Pattern.compile("jdbc:postgresql://([^:/]+):(\\d+)/([^?]+)");
+            Pattern.compile("jdbc:postgresql://([^:/]+)(?::(\\d+))?/([^?]+)");
 
     public BackupService(
             @Value("${spring.datasource.url}") String jdbcUrl,
@@ -43,7 +43,10 @@ public class BackupService {
             throw new IllegalStateException("Could not parse spring.datasource.url for backup/restore: " + jdbcUrl);
         }
         this.host = matcher.group(1);
-        this.port = Integer.parseInt(matcher.group(2));
+        // Port is optional in the URL (Neon and most managed Postgres
+        // connection strings omit it and rely on the driver's default);
+        // fall back to the standard Postgres port when it's not present.
+        this.port = matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 5432;
         this.database = matcher.group(3);
         this.username = username;
         this.password = password;
