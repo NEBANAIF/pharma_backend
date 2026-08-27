@@ -8,7 +8,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -30,5 +35,22 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request);
+    }
+
+    // TEMPORARY diagnostic endpoint -- reports exactly what authorities the
+    // backend currently sees for the logged-in caller, straight from the
+    // security context, so role/permission issues can be confirmed without
+    // guessing through the database. Safe to delete once things are sorted
+    // out; only requires being logged in (any role), doesn't leak anything
+    // sensitive beyond the caller's own authorities.
+    @GetMapping("/whoami")
+    public Map<String, Object> whoami(Authentication authentication) {
+        List<String> authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+        return Map.of(
+                "username", authentication.getName(),
+                "authorities", authorities
+        );
     }
 }
