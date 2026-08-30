@@ -1,8 +1,6 @@
 package com.pms.pmsbackend.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +9,6 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "branches")
 @Getter
 @Setter
